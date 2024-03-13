@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from rest_framework import routers
-from Meeting.views import MeetingViewSet, UserViewSet
+from Meeting.views import MeetingViewSet, UserViewSet, SuggestedMeetingView, MovingMeetingView
 from Auth.views import LoginView, LogoutView, RegisterView, ProfileView, EditView
 
 
@@ -31,6 +31,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/<int:pk>/', include(meetingrouter.urls)),
     path('api/', include(router.urls)),
+    path('api/<int:pk>/suggestedmeetings/', SuggestedMeetingView.as_view(), name='suggestedmeeting'),
+    path('api/<int:pk>/movingsuggested/', MovingMeetingView.as_view(), name='movingsuggested'),
     path('api/token/', LoginView.as_view(), name='login'),
     path('api/logout/', LogoutView.as_view(), name='logout'),
     path('api/register/', RegisterView.as_view(), name='register'),

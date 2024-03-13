@@ -16,8 +16,8 @@ class Calendar(models.Model):
 class Availability(models.Model):
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE)
     preference = models.BooleanField()
-    start_time = models.TimeField(blank=False, null=False)
-    end_time = models.TimeField(blank=False, null=False)
+    start_time = models.DateTimeField(blank=False, null=False)
+    end_time = models.DateTimeField(blank=False, null=False)
 
 class Meeting(models.Model):
     user1 = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user1')
@@ -34,8 +34,8 @@ class TempCalendar(models.Model):
 class TempAvailability(models.Model):
     calendar = models.ForeignKey(TempCalendar,on_delete=models.CASCADE)
     preference = models.BooleanField()
-    start_time = models.TimeField(blank=False, null=False)
-    end_time = models.TimeField(blank=False, null=False)
+    start_time = models.DateTimeField(blank=False, null=False)
+    end_time = models.DateTimeField(blank=False, null=False)
 
 class Invited(models.Model):
     calendar = models.ForeignKey(TempCalendar, on_delete=models.CASCADE)
