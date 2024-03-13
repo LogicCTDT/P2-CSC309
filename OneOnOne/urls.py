@@ -19,7 +19,7 @@ from django.urls import include, path
 
 from rest_framework import routers
 from Meeting.views import MeetingViewSet, UserViewSet, SuggestedMeetingView, MovingMeetingView
-from Auth.views import LoginView, LogoutView, RegisterView, ProfileView, EditView
+from Auth.views import LoginView, LogoutView, RegisterView, ProfileView, EditView, ContactsView, ContactAddView, ContactDeleteView
 from Booking import views
 
 
@@ -39,6 +39,9 @@ urlpatterns = [
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/profile/', ProfileView.as_view(), name='profile'),
     path('api/edit/', EditView.as_view(), name='edit'),
+    path('api/contacts/', ContactsView.as_view(), name='contacts'),
+    path('api/contacts/add/', ContactAddView.as_view(), name='contact-add'),
+    path('api/contacts/<int:pk>/delete/', ContactDeleteView.as_view(), name='contact-delete'),
 
     # all calendar endpoints
     path('api/calendar/<int:id>/', views.MainCalendar),
