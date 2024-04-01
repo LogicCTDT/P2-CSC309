@@ -62,3 +62,35 @@ class MovingSuggestedSerializer(serializers.Serializer):
         response_dict['user'] = instance[3]
         
         return super(MovingSuggestedSerializer, self).to_representation(response_dict)
+
+
+# calendar related serializers
+class CalendarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Calendar
+        fields = ('start_date', 'end_date','start_time', 'end_time')
+
+class AvailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Availability
+        fields = ('start_time', 'end_time', 'preference')
+
+class TempCalendarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TempCalendar
+        fields = ()
+
+class TempAvailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TempAvailability
+        fields = ('start_time', 'end_time', 'preference')
+
+class InvitedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invited
+        fields = ('answered',)
+
+class InvitedSerializerView(serializers.ModelSerializer):
+    class Meta:
+        model = Invited
+        fields = ('answered', 'user', 'calendar')

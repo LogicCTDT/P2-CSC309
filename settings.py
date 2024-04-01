@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'OneonOne.urls'
+ROOT_URLCONF = 'OneOnOne.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'OneonOne.wsgi.application'
+WSGI_APPLICATION = 'OneOnOne.wsgi.application'
 
 
 # Database

@@ -7,7 +7,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('email', 'first_name', 'last_name', 'password', 'is_superuser')
 
 class ContactSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="contact")
     class Meta:
         model = Contact
         fields = ['user', 'contact']

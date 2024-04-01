@@ -19,7 +19,8 @@ from django.urls import include, path
 
 from rest_framework import routers
 from Meeting.views import MeetingViewSet, UserViewSet, SuggestedMeetingView, MovingMeetingView
-from Auth.views import LoginView, LogoutView, RegisterView, ProfileView, EditView
+from Auth.views import LoginView, LogoutView, RegisterView, ProfileView, EditView, ContactsView, ContactAddView, ContactDeleteView
+from Booking import views
 
 
 meetingrouter = routers.DefaultRouter()
@@ -38,6 +39,24 @@ urlpatterns = [
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/profile/', ProfileView.as_view(), name='profile'),
     path('api/edit/', EditView.as_view(), name='edit'),
+    path('api/contacts/', ContactsView.as_view(), name='contacts'),
+    path('api/contacts/add/', ContactAddView.as_view(), name='contact-add'),
+    path('api/contacts/<int:pk>/delete/', ContactDeleteView.as_view(), name='contact-delete'),
+
+    # all calendar endpoints
+    path('api/calendar/<int:id>/', views.MainCalendar),
+    path('api/<int:user>/calendarpost/', views.MainCalendarCreate),
+    path('api/<int:id>/availabilitypost/', views.AvailabilityCreate),
+    path('api/availability/<int:id>/', views.AvailabilityView),
+    path('api/tempcalendar/<int:id>/', views.TempCalendarView),
+    path('api/<int:user>/tempcalendarpost/<int:calid>/', views.TempCalendarCreate),
+    path('api/<int:id>/tempavailabilitypost/', views.TempAvailabilityCreate),
+    path('api/tempavailability/<int:id>/', views.TempAvailabilityView),
+    path('api/calendar/<int:calendar_id>/availabilites/', views.AllAvailabilities),
+    path('api/tempcalendar/<int:tempcalendar_id>/tempavailabilites/', views.AllTempAvailabilities),
+    path('api/invited/<int:id>/', views.InvitedView),
+    path('api/<int:user>/invitedpost/<int:calid>/', views.InvitedCreate),
+    path('api/calendar/<int:calendar_id>/invited/', views.AllInvited),
 ]
 
 urlpatterns += meetingrouter.urls
