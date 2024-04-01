@@ -39,7 +39,6 @@ class TempAvailability(models.Model):
 
 class Invited(models.Model):
     calendar = models.ForeignKey(TempCalendar, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     answered = models.BooleanField()
 
 class Contact(models.Model):

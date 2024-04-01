@@ -2,7 +2,7 @@ from datetime import timedelta
 import datetime
 from functools import total_ordering
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from heapq import heappop, heappush, heapify
 from rest_framework import status
@@ -84,7 +84,7 @@ class SuggestedMeetingView(views.APIView):
         getSuggestedMeetings(dates, tempdates, users, start_date, res=res)
         # now all users and all availbites are ready, we now need to find the common availabilities for a date for all users to make meetings with
         
-
+        
         # for each day, match all the high preferences of availabilities in dates with temp dates. If match
         # then remove user and remove/alter timeslot and continue with the algorithm. If there are multiple matches in a single day,
         # then do it by random. Next do it for high vs low, then low vs high then low vs low. 
@@ -116,8 +116,7 @@ class SuggestedMeetingView(views.APIView):
         serializer = SuggestedMeetingSerializer(final, many=True, context={'user': calendar.user})
 
 
-
-        return HttpResponse(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
     
     
 def getSuggestedMeetings(dates, tempdates, users, currdate, res, currmeetings=[]):
@@ -158,7 +157,7 @@ def getSuggestedMeetings(dates, tempdates, users, currdate, res, currmeetings=[]
                         # recursive step
                         date = datetime.datetime.combine(currdate, tempavailability[0])
                         date2 = datetime.datetime.combine(currdate, tempavailability[1])
-                        currmeetings.append((date, date2, availability[2], tempavailability[2], a)) # append the meeting to currmeetings
+                        currmeetings.append((date, date2, availability[2], tempavailability[2], a.username)) # append the meeting to currmeetings
             
                         dates[currdate].pop(i)
                         
