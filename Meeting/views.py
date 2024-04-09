@@ -10,16 +10,36 @@ from rest_framework import status
 from Meeting.serializers import *
 from rest_framework import viewsets, permissions, generics, views
 from Meeting.models import *
+from rest_framework.decorators import action
 
 # Create your views here.
-class MeetingViewSet(viewsets.ModelViewSet):
+class MeetingViewSet(views.APIView):
     serializer_class = MeetingSerializer
-    permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
         userid = self.kwargs['pk']
         user = User.objects.get(id=userid)
         obj = Meeting.objects.filter(user1=user)
         return obj
+    def get(self, request, pk):
+        queryset = self.get_queryset()
+        res = list(queryset.values())
+        for obj in res:
+            username = User.objects.get(id=obj['user1_id']).username
+            obj['user1_id'] = username
+            username = obj['user2_id'] = User.objects.get(id=obj['user2_id']).username
+            obj['user2_id'] = username
+            
+        return JsonResponse(res, safe=False)
+                            
+class CreateMeetingView(views.APIView):
+    serializer_class = MeetingSerializer
+    def post(self, request):
+    
+        serializer = CreateMeetingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -62,9 +82,9 @@ class SuggestedMeetingView(views.APIView):
             date = availability.start_time.date()
             # append in 30 minute intervals
             curr_time = availability.start_time
-            while curr_time.time() <= (availability.end_time - timedelta(minutes=30)).time():
-                dates[date].append(((curr_time.time(), (curr_time+timedelta(minutes=30)).time(), availability.preference)))
-                curr_time += timedelta(minutes=30)  
+            while curr_time.time() <= (availability.end_time - timedelta(minutes=60)).time():
+                dates[date].append(((curr_time.time(), (curr_time+timedelta(minutes=60)).time(), availability.preference)))
+                curr_time += timedelta(minutes=60)  
         
         # dates has all the availabilities in the original calendar. Repeat for every temp calendar and get the users
         users = {}
@@ -77,9 +97,9 @@ class SuggestedMeetingView(views.APIView):
             for tempavailability in tempavailabilities:
                 date = tempavailability.start_time.date()
                 curr_time = tempavailability.start_time
-                while curr_time.time() <= (tempavailability.end_time - timedelta(minutes=30)).time():
-                    tempdates[date].append(((curr_time.time(), (curr_time+timedelta(minutes=30)).time(), tempavailability.preference, tempcalendar.user)))
-                    curr_time += timedelta(minutes=30)
+                while curr_time.time() <= (tempavailability.end_time - timedelta(minutes=60)).time():
+                    tempdates[date].append(((curr_time.time(), (curr_time+timedelta(minutes=60)).time(), tempavailability.preference, tempcalendar.user)))
+                    curr_time += timedelta(minutes=60)
         res = []
         getSuggestedMeetings(dates, tempdates, users, start_date, res=res)
         # now all users and all availbites are ready, we now need to find the common availabilities for a date for all users to make meetings with
@@ -201,7 +221,8 @@ class MovingMeetingView(views.APIView):
             first_end = first['end_time']
             second_start = second['start_time']
             second_end = second['end_time']
-
+            if first_start == second_start:
+                return HttpResponse("Invalid swap")
             user1 = User.objects.get(username=first['user'])
             user2 = User.objects.get(username=second['user'])
 
@@ -216,3 +237,56 @@ class MovingMeetingView(views.APIView):
                 return HttpResponse("Valid Swap")
             return HttpResponse("Invalid swap")
         return HttpResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+class TempAvailabilityByNameView(views.APIView):
+    serializer_class = TempAvailabilitySerializer
+    
+    def post(self, request):
+        print(request.data)
+        username = request.data["username"]
+        calendar1 = request.data['calendar']
+        user = User.objects.get(username=username)
+        calendar = Calendar.objects.get(id=calendar1)
+        obj = TempCalendar.objects.get(user=user, calendar=calendar)
+        avail = TempAvailability.objects.filter(calendar=obj)
+        return JsonResponse(TempAvailabilitySerializer(avail, many=True).data, safe=False)
+    
+
+class ContactView(views.APIView):
+    serializer_class = ContactSerializer
+    def get(self, request, *args, **kwargs):
+        user_id = self.kwargs['pk']
+        user = User.objects.get(id=user_id)
+        contacts = Contact.objects.filter(user=user)
+        res = list(contacts.values())
+        for obj in res:
+            user = User.objects.get(id=obj['user_id'])
+            obj['user_id'] = user.username
+            contact = User.objects.get(id=obj['contact_id'])
+            obj['contact_id'] = contact.username
+            obj['contact_email'] = contact.email
+            obj['contact_id'] = contact.id
+
+            
+        return JsonResponse(res, safe=False)
+    
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = CreateContactSerializer(data=request.data)
+        if serializer.is_valid():
+            
+            email = serializer.validated_data['email']
+            contact1 = User.objects.get(email=email)
+            user = User.objects.get(id=serializer.validated_data['user'])
+            print(serializer.validated_data['user'])
+            print(contact1.id)
+            if (Contact.objects.filter(user=serializer.validated_data['user'], contact=contact1.id)):
+                return HttpResponse("Contact already exists")
+            contact2 = Contact.objects.create(user=user, contact=contact1)
+            if serializer.validated_data['user'] == contact2.id:
+                return HttpResponse("Cannot add self as contact")
+            contact2.save()
+            return HttpResponse("Success", status=201)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

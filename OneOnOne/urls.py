@@ -18,31 +18,31 @@ from django.contrib import admin
 from django.urls import include, path
 
 from rest_framework import routers
-from Meeting.views import MeetingViewSet, UserViewSet, SuggestedMeetingView, MovingMeetingView
+from Meeting.views import MeetingViewSet, UserViewSet, SuggestedMeetingView, MovingMeetingView, TempAvailabilityByNameView, CreateMeetingView, ContactView
 from Auth.views import LoginView, LogoutView, RegisterView, ProfileView, EditView, ContactsView, ContactAddView, ContactDeleteView
 from Booking import views
 
 
-meetingrouter = routers.DefaultRouter()
-meetingrouter.register(r'meetings', MeetingViewSet, basename='meeting')
+
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/<int:pk>/', include(meetingrouter.urls)),
+    path('api/<int:pk>/meetings/', MeetingViewSet.as_view(), name='meeting'),
     path('api/', include(router.urls)),
     path('api/<int:pk>/suggestedmeetings/', SuggestedMeetingView.as_view(), name='suggestedmeeting'),
     path('api/<int:pk>/movingsuggested/', MovingMeetingView.as_view(), name='movingsuggested'),
+    path('api/tempavailbitiesbyname/', TempAvailabilityByNameView.as_view(), name='tempavailabilitiesbyname'),
     path('api/token/', LoginView.as_view(), name='login'),
     path('api/logout/', LogoutView.as_view(), name='logout'),
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/profile/', ProfileView.as_view(), name='profile'),
     path('api/edit/', EditView.as_view(), name='edit'),
-    path('api/contacts/', ContactsView.as_view(), name='contacts'),
     path('api/contacts/add/', ContactAddView.as_view(), name='contact-add'),
     path('api/contacts/<int:pk>/delete/', ContactDeleteView.as_view(), name='contact-delete'),
-
+    path('api/createmeeting/', CreateMeetingView.as_view(), name='create-meeting'),
+    path('api/<int:pk>/contacts/', ContactView.as_view(), name='contacts'),
     # all calendar endpoints
     path('api/calendar/<int:id>/', views.MainCalendar),
     path('api/<int:user>/calendarpost/', views.MainCalendarCreate),
@@ -57,7 +57,6 @@ urlpatterns = [
     path('api/invited/<int:id>/', views.InvitedView),
     path('api/<int:user>/invitedpost/<int:calid>/', views.InvitedCreate),
     path('api/calendar/<int:calendar_id>/invited/', views.AllInvited),
-]
 
-urlpatterns += meetingrouter.urls
+]
 
