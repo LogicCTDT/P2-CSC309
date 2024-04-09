@@ -11,6 +11,23 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+# added function to grab a user's info
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+
+@api_view(['GET'])
+def user_detail(request, user_id):
+    try:
+        user = get_object_or_404(User, pk=user_id)
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+        }
+        return JsonResponse(user_data)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User does not exist"}, status=404)
+
 @api_view(['GET', 'PUT'])
 def MainCalendar(request, id):
     try:

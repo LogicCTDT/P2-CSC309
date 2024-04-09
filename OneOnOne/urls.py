@@ -58,5 +58,8 @@ urlpatterns = [
     path('api/<int:user>/invitedpost/<int:calid>/', views.InvitedCreate),
     path('api/calendar/<int:calendar_id>/invited/', views.AllInvited),
 
+    path('api/user/<int:user_id>/', views.user_detail),
+
+
 ]
 
