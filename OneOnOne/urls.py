@@ -52,7 +52,7 @@ urlpatterns = [
     path('api/<int:user>/tempcalendarpost/<int:calid>/', views.TempCalendarCreate),
     path('api/<int:id>/tempavailabilitypost/', views.TempAvailabilityCreate),
     path('api/tempavailability/<int:id>/', views.TempAvailabilityView),
-    path('api/calendar/<int:calendar_id>/availabilites/', views.AllAvailabilities),
+    path('api/calendar/<int:calendar_id>/availabilities/', views.AllAvailabilities),
     path('api/tempcalendar/<int:tempcalendar_id>/tempavailabilites/', views.AllTempAvailabilities),
     path('api/invited/<int:id>/', views.InvitedView),
     path('api/<int:user>/invitedpost/<int:calid>/', views.InvitedCreate),
