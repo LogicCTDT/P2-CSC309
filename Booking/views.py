@@ -130,7 +130,7 @@ def TempAvailabilityView(request, id):
 def AllAvailabilities(request, calendar_id):
     try:
         avs = Availability.objects.filter(calendar=calendar_id)
-        serializer = AvailabilitySerializer(avs, many=True)
+        serializer = AvailabilitySerializerView(avs, many=True)
         return Response(serializer.data)
     except Event.DoesNotExist:
         return Response({"error": "Calendar does not exist or has no availabilities"}, status=404)
