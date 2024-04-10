@@ -201,7 +201,7 @@ def InvitedCreate(request, calid, user):
         if serializer.is_valid():
             cal = Calendar.objects.get(pk=calid)
             user = User.objects.get(id=user)
-            serializer.save(calendar=cal, user=user)
+            serializer.save(calendar=cal, invUser=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
