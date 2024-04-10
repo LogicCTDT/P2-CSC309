@@ -11,6 +11,54 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+# added function to grab a user's info
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+
+@api_view(['GET'])
+def user_detail(request, user_id):
+    try:
+        user = get_object_or_404(User, pk=user_id)
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+        }
+        return JsonResponse(user_data)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User does not exist"}, status=404)
+
+
+@api_view(['GET'])
+def allUsers(request):
+    try:
+        # user_data = []
+        # for i in range(4):
+        #     user = get_object_or_404(User, pk=(i+1))
+        #     userdata = {
+        #         'id': user.id,
+        #         'username': user.username,
+        #         'email': user.email,
+        #     }
+        #     user_data.append(userdata)
+        users = User.objects.all()
+        user_data = []
+        for user in users:
+            user_data.append({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+            })
+        return JsonResponse(user_data, safe=False)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "No users found"}, status=404)
+
+
+
+
+
+
+
 @api_view(['GET', 'PUT'])
 def MainCalendar(request, id):
     try:
@@ -47,7 +95,7 @@ def AvailabilityCreate(request, id):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def AvailabilityView(request, id):
     try:
         av = Availability.objects.get(pk=id)
@@ -63,6 +111,9 @@ def AvailabilityView(request, id):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        av.delete()
+        return(Response(status=status.HTTP_204_NO_CONTENT))
 
 
 
@@ -127,7 +178,7 @@ def TempAvailabilityView(request, id):
 def AllAvailabilities(request, calendar_id):
     try:
         avs = Availability.objects.filter(calendar=calendar_id)
-        serializer = AvailabilitySerializer(avs, many=True)
+        serializer = AvailabilitySerializerView(avs, many=True)
         return Response(serializer.data)
     except Event.DoesNotExist:
         return Response({"error": "Calendar does not exist or has no availabilities"}, status=404)
@@ -150,11 +201,11 @@ def InvitedCreate(request, calid, user):
         if serializer.is_valid():
             cal = Calendar.objects.get(pk=calid)
             user = User.objects.get(id=user)
-            serializer.save(calendar=cal, user=user)
+            serializer.save(calendar=cal, invUser=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def InvitedView(request, id):
     try:
         av = Invited.objects.get(pk=id)
@@ -170,6 +221,9 @@ def InvitedView(request, id):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        av.delete()
+        return(Response(status=status.HTTP_204_NO_CONTENT))
 
 @api_view(['GET'])
 def AllInvited(request, calendar_id):

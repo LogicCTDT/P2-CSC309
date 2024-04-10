@@ -82,6 +82,11 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         model = Availability
         fields = ('start_time', 'end_time', 'preference')
 
+class AvailabilitySerializerView(serializers.ModelSerializer):
+    class Meta:
+        model = Availability
+        fields = ('id', 'start_time', 'end_time', 'preference', 'user')
+
 class TempCalendarSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempCalendar
@@ -100,7 +105,7 @@ class InvitedSerializer(serializers.ModelSerializer):
 class InvitedSerializerView(serializers.ModelSerializer):
     class Meta:
         model = Invited
-        fields = ('answered', 'user', 'calendar')
+        fields = ('answered', 'invUser', 'calendar', 'id')
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
