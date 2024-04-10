@@ -265,7 +265,8 @@ class ContactView(views.APIView):
             user = User.objects.get(id=obj['user_id'])
             obj['user_id'] = user.username
             contact = User.objects.get(id=obj['contact_id'])
-            obj['contact_id'] = contact.username
+            print(contact.username)
+            obj['contact_username'] = contact.username
             obj['contact_email'] = contact.email
             obj['contact_id'] = contact.id
 
