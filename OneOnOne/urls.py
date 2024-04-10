@@ -59,6 +59,8 @@ urlpatterns = [
     path('api/calendar/<int:calendar_id>/invited/', views.AllInvited),
 
     path('api/user/<int:user_id>/', views.user_detail),
+    path('api/allUsers/', views.allUsers),
+
 
 
 ]

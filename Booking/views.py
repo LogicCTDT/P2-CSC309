@@ -28,6 +28,37 @@ def user_detail(request, user_id):
     except User.DoesNotExist:
         return JsonResponse({"error": "User does not exist"}, status=404)
 
+
+@api_view(['GET'])
+def allUsers(request):
+    try:
+        # user_data = []
+        # for i in range(4):
+        #     user = get_object_or_404(User, pk=(i+1))
+        #     userdata = {
+        #         'id': user.id,
+        #         'username': user.username,
+        #         'email': user.email,
+        #     }
+        #     user_data.append(userdata)
+        users = User.objects.all()
+        user_data = []
+        for user in users:
+            user_data.append({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+            })
+        return JsonResponse(user_data, safe=False)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "No users found"}, status=404)
+
+
+
+
+
+
+
 @api_view(['GET', 'PUT'])
 def MainCalendar(request, id):
     try:
